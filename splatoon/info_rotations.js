@@ -3,7 +3,8 @@ const { json_to_js, js_to_json } = require('../convert_json.js');
 const Canvas = require('canvas');
 const fs = require('fs');
 const axios = require('axios');
-const { get_rotations } = require('./get.js')
+const { get_rotations } = require('./get.js');
+const { start } = require('repl');
 
 
 
@@ -99,7 +100,7 @@ async function get_test_webhooks_url() {
 }
 
 async function send_to_servers(file) {
-    let urls = await get_test_webhooks_url();
+    let urls = await get_webhooks_url();
     let urls_list = urls[file.type];
     await Promise.all(urls_list.map(url => send_message(file.img, url)));
 }
@@ -780,7 +781,7 @@ async function auto_update() {
 
     //Verification de l'heure pour savoir si on doit mettre a jour les rotations
 
-    if (/*await is_fetchable()*/ true) {
+    if (await is_fetchable()) {
         console.log(CC.Reset, "Update des données");
         //Récupération des données
         await fetchSchedules();
@@ -788,7 +789,7 @@ async function auto_update() {
     }
 
 
-    if (/*await is_sendable()*/ true) {
+    if (await is_sendable()) {
         console.log(CC.Reset, "Update des rotations");
 
         const date = new Date();
@@ -970,7 +971,7 @@ function startInterval() {
     }, 5 * 1000); // 5 seconde = 5 secondes * 1000 ms
 }
 
-auto_update();
+startInterval();
 
 module.exports = {
     startInterval,
