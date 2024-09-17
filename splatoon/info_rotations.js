@@ -87,6 +87,16 @@ const TYPE_ENVOIE = {
     coopGrouping: "coop",
 }
 
+const LINKS_UNDEFINED = {
+    regular: LOCAL_URL + "img_rotations/undefined/normal_undefined.png",
+    baranka: LOCAL_URL + "img_rotations/undefined/normal_undefined.png",
+    x: LOCAL_URL + "img_rotations/undefined/normal_undefined.png",
+    fest: LOCAL_URL + "img_rotations/undefined/normal_undefined.png",
+    tricolor: LOCAL_URL + "img_rotations/undefined/normal_undefined.png",
+    event: LOCAL_URL + "img_rotations/undefined/challenge_undefined.png",
+    coopGrouping: LOCAL_URL + "img_rotations/undefined/salmon_undefined.png",
+}
+
 // ------------------------------------------------------------------------------------------------------------
 
 async function get_webhooks_url() {
@@ -310,6 +320,14 @@ async function create_classic_image(type, settings, startTime, endTime) {
         };
     } catch (error) {
         console.error(CC.FgRed, 'Erreur lors de la création de l\'image : ', error);
+
+        //Envoie de l'image undefined
+        return {
+            img: await Canvas.loadImage(LINKS_UNDEFINED[type]),
+            type: type,
+            link: LINKS_UNDEFINED[type],
+        }
+
     }
 }
 
@@ -721,7 +739,7 @@ async function create_coop_image(nodes, index) {
 
         return {
             img: img,
-            type: coopGrouping,
+            type: "coopGrouping",
             link: link,
         };
     } catch(error) {
