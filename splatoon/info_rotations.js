@@ -861,7 +861,7 @@ async function auto_update() {
                         rotations_imgs.push(await create_classic_image("fest", settings, rota.startTime, rota.endTime));
                     }
                     if (currentFest.state != "FIRST_HALF") {
-                        rotations_imgs.push(await create_tricolor_image("fest", settings, currentFest.tricolorStage, rota.startTime, rota.endTime))
+                        rotations_imgs.push(await create_tricolor_image("fest", settings, currentFest.tricolorStage[0], rota.startTime, rota.endTime))
                     }
                 }
             }
