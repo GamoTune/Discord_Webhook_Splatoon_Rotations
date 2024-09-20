@@ -4,7 +4,6 @@ const Canvas = require('canvas');
 const fs = require('fs');
 const axios = require('axios');
 const { get_rotations } = require('./get.js');
-const { start } = require('repl');
 
 
 
@@ -56,6 +55,7 @@ const COLORS = {
 
 const ORDER = {
     regular: 0,
+    bankara: 1,
     bankaraSérie: 1,
     bankaraOuvert: 2,
     x: 3,
@@ -77,6 +77,7 @@ const TYPE_FR_NAME = {
 
 const TYPE_ENVOIE = {
     regular: "normal",
+    bankara: "normal",
     bankaraSérie: "normal",
     bankaraOuvert: "normal",
     x: "normal",
@@ -89,7 +90,7 @@ const TYPE_ENVOIE = {
 
 const LINKS_UNDEFINED = {
     regular: LOCAL_URL + "img_rotations/undefined/normal_undefined.png",
-    baranka: LOCAL_URL + "img_rotations/undefined/normal_undefined.png",
+    bankara: LOCAL_URL + "img_rotations/undefined/normal_undefined.png",
     x: LOCAL_URL + "img_rotations/undefined/normal_undefined.png",
     fest: LOCAL_URL + "img_rotations/undefined/normal_undefined.png",
     tricolor: LOCAL_URL + "img_rotations/undefined/normal_undefined.png",
@@ -110,7 +111,7 @@ async function get_test_webhooks_url() {
 }
 
 async function send_to_servers(file) {
-    let urls = await get_webhooks_url();
+    let urls = await get_test_webhooks_url();
     let urls_list = urls[file.type];
     await Promise.all(urls_list.map(url => send_message(file.img, url)));
 }
@@ -319,14 +320,15 @@ async function create_classic_image(type, settings, startTime, endTime) {
             link: link,
         };
     } catch (error) {
-        console.error(CC.FgRed, 'Erreur lors de la création de l\'image : ', error);
+        console.error(CC.FgRed, 'Erreur lors de la création de l\'image');
+        console.log(CC.FgRed, 'Envoie de l\'image undefined');
 
         //Envoie de l'image undefined
         return {
-            img: await Canvas.loadImage(LINKS_UNDEFINED[type]),
+            img: LINKS_UNDEFINED[type],
             type: type,
             link: LINKS_UNDEFINED[type],
-        }
+        };
 
     }
 }
@@ -420,7 +422,15 @@ async function create_tricolor_image(type, settings, stage, startTime, endTime) 
             link: link,
         };
     } catch (error) {
-        console.error(CC.FgRed, 'Erreur lors de la création de l\'image : ', error);
+        console.error(CC.FgRed, 'Erreur lors de la création de l\'image');
+        console.log(CC.FgRed, 'Envoie de l\'image undefined');
+
+        //Envoie de l'image undefined
+        return {
+            img: LINKS_UNDEFINED[type],
+            type: type,
+            link: LINKS_UNDEFINED[type],
+        };
     }
 }
 
@@ -548,7 +558,15 @@ async function create_challenge_image(settings, startTime, endTime, noc) {
             link: link,
         };
     } catch(error) {
-        console.error(CC.FgRed, 'Erreur lors de la création de l\'image : ', error);
+        console.error(CC.FgRed, 'Erreur lors de la création de l\'image');
+        console.log(CC.FgRed, 'Envoie de l\'image undefined');
+
+        //Envoie de l'image undefined
+        return {
+            img: LINKS_UNDEFINED[type],
+            type: type,
+            link: LINKS_UNDEFINED[type],
+        };
     }
 }
 
@@ -743,7 +761,15 @@ async function create_coop_image(nodes, index) {
             link: link,
         };
     } catch(error) {
-        console.error(CC.FgRed, 'Erreur lors de la création de l\'image : ', error);
+        console.error(CC.FgRed, 'Erreur lors de la création de l\'image');
+        console.log(CC.FgRed, 'Envoie de l\'image undefined');
+
+        //Envoie de l'image undefined
+        return {
+            img: LINKS_UNDEFINED[type],
+            type: type,
+            link: LINKS_UNDEFINED[type],
+        };
     }
 }
 
@@ -799,7 +825,7 @@ async function auto_update() {
 
     //Verification de l'heure pour savoir si on doit mettre a jour les rotations
 
-    if (await is_fetchable()) {
+    if (/*await is_fetchable()*/ false) {
         console.log(CC.Reset, "Update des données");
         //Récupération des données
         await fetchSchedules();
@@ -807,7 +833,7 @@ async function auto_update() {
     }
 
 
-    if (await is_sendable()) {
+    if (/*await is_sendable()*/ true) {
         console.log(CC.Reset, "Update des rotations");
 
         const date = new Date();
@@ -989,7 +1015,8 @@ function startInterval() {
     }, 5 * 1000); // 5 seconde = 5 secondes * 1000 ms
 }
 
-startInterval();
+//startInterval();
+auto_update();
 
 module.exports = {
     startInterval,
