@@ -31,8 +31,7 @@
                             "rule": "TURF_WAR",
                             "id": "VnNSdWxlLTA="
                         }
-                    },
-                    "festMatchSettings": null
+                    ]
                 },
                 {
                     "startTime": "2024-09-20T10:00:00Z",
@@ -63,8 +62,7 @@
                             "rule": "TURF_WAR",
                             "id": "VnNSdWxlLTA="
                         }
-                    },
-                    "festMatchSettings": null
+                    ]
                 },
                 {
                     "startTime": "2024-09-20T12:00:00Z",
@@ -95,8 +93,7 @@
                             "rule": "TURF_WAR",
                             "id": "VnNSdWxlLTA="
                         }
-                    },
-                    "festMatchSettings": null
+                    ]
                 },
                 {
                     "startTime": "2024-09-20T14:00:00Z",
@@ -300,9 +297,13 @@
                             {
                                 "vsStageId": 1,
                                 "name": "Scorch Gorge",
+                                "vsStageId": 1,
+                                "name": "Scorch Gorge",
                                 "image": {
                                     "url": "https://splatoon3.ink/assets/splatnet/v3/stage_img/icon/low_resolution/35f9ca08ccc2bf759774ab2cb886567c117b9287875ca92fb590c1294ddcdc1e_1.png"
+                                    "url": "https://splatoon3.ink/assets/splatnet/v3/stage_img/icon/low_resolution/35f9ca08ccc2bf759774ab2cb886567c117b9287875ca92fb590c1294ddcdc1e_1.png"
                                 },
+                                "id": "VnNTdGFnZS0x"
                                 "id": "VnNTdGFnZS0x"
                             },
                             {
@@ -321,7 +322,11 @@
                         }
                     },
                     "festMatchSettings": null
-                },
+                }
+            ]
+        },
+        "bankaraSchedules": {
+            "nodes": [
                 {
                     "startTime": "2024-09-21T04:00:00Z",
                     "endTime": "2024-09-21T06:00:00Z",
@@ -427,12 +432,12 @@
                             "__typename": "BankaraMatchSetting",
                             "vsStages": [
                                 {
-                                    "vsStageId": 1,
-                                    "name": "Scorch Gorge",
+                                    "vsStageId": 6,
+                                    "name": "Mincemeat Metalworks",
                                     "image": {
-                                        "url": "https://splatoon3.ink/assets/splatnet/v3/stage_img/icon/low_resolution/35f9ca08ccc2bf759774ab2cb886567c117b9287875ca92fb590c1294ddcdc1e_1.png"
+                                        "url": "https://splatoon3.ink/assets/splatnet/v3/stage_img/icon/low_resolution/de1f212e9ff0648f36cd3b8e0917ef36b3bd51445159297dcb948f34a09f2f05_1.png"
                                     },
-                                    "id": "VnNTdGFnZS0x"
+                                    "id": "VnNTdGFnZS02"
                                 },
                                 {
                                     "vsStageId": 18,
@@ -444,15 +449,19 @@
                                 }
                             ],
                             "vsRule": {
-                                "name": "Clam Blitz",
-                                "rule": "CLAM",
-                                "id": "VnNSdWxlLTQ="
+                                "name": "Rainmaker",
+                                "rule": "GOAL",
+                                "id": "VnNSdWxlLTM="
                             },
                             "bankaraMode": "OPEN"
                         }
                     ],
                     "festMatchSettings": null
-                },
+                }
+            ]
+        },
+        "xSchedules": {
+            "nodes": [
                 {
                     "startTime": "2024-09-20T10:00:00Z",
                     "endTime": "2024-09-20T12:00:00Z",
@@ -513,8 +522,7 @@
                             },
                             "bankaraMode": "OPEN"
                         }
-                    ],
-                    "festMatchSettings": null
+                    ]
                 },
                 {
                     "startTime": "2024-09-20T12:00:00Z",
@@ -576,8 +584,7 @@
                             },
                             "bankaraMode": "OPEN"
                         }
-                    ],
-                    "festMatchSettings": null
+                    ]
                 },
                 {
                     "startTime": "2024-09-20T14:00:00Z",
@@ -639,9 +646,13 @@
                             },
                             "bankaraMode": "OPEN"
                         }
-                    ],
+                    },
                     "festMatchSettings": null
-                },
+                }
+            ]
+        },
+        "eventSchedules": {
+            "nodes": [
                 {
                     "startTime": "2024-09-20T16:00:00Z",
                     "endTime": "2024-09-20T18:00:00Z",
@@ -773,8 +784,8 @@
                     "endTime": "2024-09-20T22:00:00Z",
                     "bankaraMatchSettings": [
                         {
-                            "__isVsSetting": "BankaraMatchSetting",
-                            "__typename": "BankaraMatchSetting",
+                            "__typename": "FestMatchSetting",
+                            "__isVsSetting": "FestMatchSetting",
                             "vsStages": [
                                 {
                                     "vsStageId": 8,
@@ -794,21 +805,21 @@
                                 }
                             ],
                             "vsRule": {
-                                "name": "Clam Blitz",
-                                "rule": "CLAM",
-                                "id": "VnNSdWxlLTQ="
+                                "name": "Turf War",
+                                "rule": "TURF_WAR",
+                                "id": "VnNSdWxlLTA="
                             },
-                            "bankaraMode": "CHALLENGE"
+                            "festMode": "CHALLENGE"
                         },
                         {
-                            "__isVsSetting": "BankaraMatchSetting",
-                            "__typename": "BankaraMatchSetting",
+                            "__typename": "FestMatchSetting",
+                            "__isVsSetting": "FestMatchSetting",
                             "vsStages": [
                                 {
-                                    "vsStageId": 12,
-                                    "name": "Mahi-Mahi Resort",
+                                    "vsStageId": 18,
+                                    "name": "Manta Maria",
                                     "image": {
-                                        "url": "https://splatoon3.ink/assets/splatnet/v3/stage_img/icon/low_resolution/8273118c1ffe1bf6fe031c7d8c9795dab52632c9b76e8e9f01f644ac5ae0ccc0_1.png"
+                                        "url": "https://splatoon3.ink/assets/splatnet/v3/stage_img/icon/low_resolution/0b7fd997781e03eb9d5bf1875ed070f698afc654f4fe929452c65aa26c0a35fd_1.png"
                                     },
                                     "id": "VnNTdGFnZS0xMg=="
                                 },
@@ -826,18 +837,18 @@
                                 "rule": "LOFT",
                                 "id": "VnNSdWxlLTI="
                             },
-                            "bankaraMode": "OPEN"
+                            "festMode": "REGULAR"
                         }
                     ],
-                    "festMatchSettings": null
+                    "endTime": "2024-09-15T02:00:00Z"
                 },
                 {
                     "startTime": "2024-09-20T22:00:00Z",
                     "endTime": "2024-09-21T00:00:00Z",
                     "bankaraMatchSettings": [
                         {
-                            "__isVsSetting": "BankaraMatchSetting",
-                            "__typename": "BankaraMatchSetting",
+                            "__typename": "FestMatchSetting",
+                            "__isVsSetting": "FestMatchSetting",
                             "vsStages": [
                                 {
                                     "vsStageId": 10,
@@ -857,15 +868,15 @@
                                 }
                             ],
                             "vsRule": {
-                                "name": "Splat Zones",
-                                "rule": "AREA",
-                                "id": "VnNSdWxlLTE="
+                                "name": "Turf War",
+                                "rule": "TURF_WAR",
+                                "id": "VnNSdWxlLTA="
                             },
-                            "bankaraMode": "CHALLENGE"
+                            "festMode": "CHALLENGE"
                         },
                         {
-                            "__isVsSetting": "BankaraMatchSetting",
-                            "__typename": "BankaraMatchSetting",
+                            "__typename": "FestMatchSetting",
+                            "__isVsSetting": "FestMatchSetting",
                             "vsStages": [
                                 {
                                     "vsStageId": 13,
@@ -885,22 +896,22 @@
                                 }
                             ],
                             "vsRule": {
-                                "name": "Rainmaker",
-                                "rule": "GOAL",
-                                "id": "VnNSdWxlLTM="
+                                "name": "Turf War",
+                                "rule": "TURF_WAR",
+                                "id": "VnNSdWxlLTA="
                             },
-                            "bankaraMode": "OPEN"
+                            "festMode": "REGULAR"
                         }
                     ],
-                    "festMatchSettings": null
+                    "endTime": "2024-09-15T04:00:00Z"
                 },
                 {
                     "startTime": "2024-09-21T00:00:00Z",
                     "endTime": "2024-09-21T02:00:00Z",
                     "bankaraMatchSettings": [
                         {
-                            "__isVsSetting": "BankaraMatchSetting",
-                            "__typename": "BankaraMatchSetting",
+                            "__typename": "FestMatchSetting",
+                            "__isVsSetting": "FestMatchSetting",
                             "vsStages": [
                                 {
                                     "vsStageId": 8,
@@ -924,17 +935,17 @@
                                 "rule": "GOAL",
                                 "id": "VnNSdWxlLTM="
                             },
-                            "bankaraMode": "CHALLENGE"
+                            "festMode": "CHALLENGE"
                         },
                         {
-                            "__isVsSetting": "BankaraMatchSetting",
-                            "__typename": "BankaraMatchSetting",
+                            "__typename": "FestMatchSetting",
+                            "__isVsSetting": "FestMatchSetting",
                             "vsStages": [
                                 {
-                                    "vsStageId": 6,
-                                    "name": "Mincemeat Metalworks",
+                                    "vsStageId": 23,
+                                    "name": "Marlin Airport",
                                     "image": {
-                                        "url": "https://splatoon3.ink/assets/splatnet/v3/stage_img/icon/low_resolution/de1f212e9ff0648f36cd3b8e0917ef36b3bd51445159297dcb948f34a09f2f05_1.png"
+                                        "url": "https://splatoon3.ink/assets/splatnet/v3/stage_img/icon/low_resolution/21ea0549b3d29de56ec20affef8866297929d0defb82a27cd199c9d8dade508c_1.png"
                                     },
                                     "id": "VnNTdGFnZS02"
                                 },
@@ -948,22 +959,22 @@
                                 }
                             ],
                             "vsRule": {
-                                "name": "Tower Control",
-                                "rule": "LOFT",
-                                "id": "VnNSdWxlLTI="
+                                "name": "Turf War",
+                                "rule": "TURF_WAR",
+                                "id": "VnNSdWxlLTA="
                             },
-                            "bankaraMode": "OPEN"
+                            "festMode": "REGULAR"
                         }
                     ],
-                    "festMatchSettings": null
+                    "endTime": "2024-09-15T06:00:00Z"
                 },
                 {
                     "startTime": "2024-09-21T02:00:00Z",
                     "endTime": "2024-09-21T04:00:00Z",
                     "bankaraMatchSettings": [
                         {
-                            "__isVsSetting": "BankaraMatchSetting",
-                            "__typename": "BankaraMatchSetting",
+                            "__typename": "FestMatchSetting",
+                            "__isVsSetting": "FestMatchSetting",
                             "vsStages": [
                                 {
                                     "vsStageId": 13,
@@ -987,11 +998,11 @@
                                 "rule": "AREA",
                                 "id": "VnNSdWxlLTE="
                             },
-                            "bankaraMode": "CHALLENGE"
+                            "festMode": "CHALLENGE"
                         },
                         {
-                            "__isVsSetting": "BankaraMatchSetting",
-                            "__typename": "BankaraMatchSetting",
+                            "__typename": "FestMatchSetting",
+                            "__isVsSetting": "FestMatchSetting",
                             "vsStages": [
                                 {
                                     "vsStageId": 12,
@@ -1015,18 +1026,18 @@
                                 "rule": "CLAM",
                                 "id": "VnNSdWxlLTQ="
                             },
-                            "bankaraMode": "OPEN"
+                            "festMode": "REGULAR"
                         }
                     ],
-                    "festMatchSettings": null
+                    "endTime": "2024-09-15T08:00:00Z"
                 },
                 {
                     "startTime": "2024-09-21T04:00:00Z",
                     "endTime": "2024-09-21T06:00:00Z",
                     "bankaraMatchSettings": [
                         {
-                            "__isVsSetting": "BankaraMatchSetting",
-                            "__typename": "BankaraMatchSetting",
+                            "__typename": "FestMatchSetting",
+                            "__isVsSetting": "FestMatchSetting",
                             "vsStages": [
                                 {
                                     "vsStageId": 17,
@@ -1037,24 +1048,24 @@
                                     "id": "VnNTdGFnZS0xNw=="
                                 },
                                 {
-                                    "vsStageId": 22,
-                                    "name": "Bluefin Depot",
+                                    "vsStageId": 20,
+                                    "name": "Shipshape Cargo Co.",
                                     "image": {
-                                        "url": "https://splatoon3.ink/assets/splatnet/v3/stage_img/icon/low_resolution/3e468df1f38d6323cc8d9446049696d66e47831e68cd31032502349b11960500_1.png"
+                                        "url": "https://splatoon3.ink/assets/splatnet/v3/stage_img/icon/low_resolution/b65a70eedf129848b9d2b492bb68712abf91a5cbda13131848947fb04c51d665_1.png"
                                     },
-                                    "id": "VnNTdGFnZS0yMg=="
+                                    "id": "VnNTdGFnZS0yMA=="
                                 }
                             ],
                             "vsRule": {
-                                "name": "Tower Control",
-                                "rule": "LOFT",
-                                "id": "VnNSdWxlLTI="
+                                "name": "Turf War",
+                                "rule": "TURF_WAR",
+                                "id": "VnNSdWxlLTA="
                             },
-                            "bankaraMode": "CHALLENGE"
+                            "festMode": "CHALLENGE"
                         },
                         {
-                            "__isVsSetting": "BankaraMatchSetting",
-                            "__typename": "BankaraMatchSetting",
+                            "__typename": "FestMatchSetting",
+                            "__isVsSetting": "FestMatchSetting",
                             "vsStages": [
                                 {
                                     "vsStageId": 7,
@@ -1078,7 +1089,7 @@
                                 "rule": "GOAL",
                                 "id": "VnNSdWxlLTM="
                             },
-                            "bankaraMode": "OPEN"
+                            "festMode": "REGULAR"
                         }
                     ],
                     "festMatchSettings": null
