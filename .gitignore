@@ -128,3 +128,9 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Data rotations
+splatoon/rotations_data.json
+splatoon/splatoon_data.json
+splatoon/logs.json
+splatoon/data_img.json
