@@ -4,6 +4,7 @@ const Canvas = require('canvas');
 const fs = require('fs');
 const axios = require('axios');
 const { get_rotations } = require('./get.js');
+const { get_test_webhooks_url, get_webhooks_url } = require('./get.js');
 
 
 
@@ -100,18 +101,8 @@ const LINKS_UNDEFINED = {
 
 // ------------------------------------------------------------------------------------------------------------
 
-async function get_webhooks_url() {
-    let urls = await json_to_js(LOCAL_URL + 'webhooks.json');
-    return urls;
-}
-
-async function get_test_webhooks_url() {
-    let urls = await json_to_js(LOCAL_URL + 'webhooks_test.json');
-    return urls;
-}
-
 async function send_to_servers(file) {
-    let urls = await get_test_webhooks_url();
+    let urls = await get_webhooks_url();
     let urls_list = urls[file.type];
     await Promise.all(urls_list.map(url => send_message(file.img, url)));
 }
@@ -130,7 +121,10 @@ async function send_message(file, url) {
             });
     }
     catch (error) {
-        console.error(CC.FgRed, 'Error while sending message : ', error);
+        console.error(CC.FgRed, 'Error while sending message : ', error.code);
+        if (error.code == 10015) {
+            console.log(CC.FgRed, 'Error : Invalid permissions');
+        }
     }
 }
 
@@ -825,15 +819,14 @@ async function auto_update() {
 
     //Verification de l'heure pour savoir si on doit mettre a jour les rotations
 
-    if (/*await is_fetchable()*/ false) {
+    if (await is_fetchable()) {
         console.log(CC.Reset, "Update des données");
         //Récupération des données
         await fetchSchedules();
         await fetchVF();
     }
 
-
-    if (/*await is_sendable()*/ true) {
+    if (await is_sendable()) {
         console.log(CC.Reset, "Update des rotations");
 
         const date = new Date();
@@ -1015,10 +1008,10 @@ function startInterval() {
     }, 5 * 1000); // 5 seconde = 5 secondes * 1000 ms
 }
 
-//startInterval();
-auto_update();
+startInterval();
+//auto_update();
 
 module.exports = {
     startInterval,
-    auto_update
+    auto_update,
 }
