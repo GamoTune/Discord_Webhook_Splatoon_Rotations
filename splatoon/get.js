@@ -13,6 +13,8 @@ module.exports = {
     get_paths_images,
     get_path_by_name,
     get_now_image_by_name,
+    get_webhooks_url,
+    get_test_webhooks_url,
 }
 
 const name_undefined = {
@@ -23,6 +25,8 @@ const name_undefined = {
     'event': 'challenge_undefined',
     'coop': 'salmon_undefined',
 }
+
+const LOCAL_URL = 'splatoon/';
 
 // GET des rotations ---------------------------------------------------------------------------------------------------
 
@@ -112,4 +116,16 @@ async function get_now_image_by_name(name){
     }
     return new_path;
 
+}
+
+// GET des webhooks ---------------------------------------------------------------------------------------------------
+
+async function get_webhooks_url() {
+    let urls = await json_to_js(LOCAL_URL + 'webhooks.json');
+    return urls;
+}
+
+async function get_test_webhooks_url() {
+    let urls = await json_to_js(LOCAL_URL + 'webhooks_test.json');
+    return urls;
 }
