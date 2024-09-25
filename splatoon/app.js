@@ -4,7 +4,8 @@ const Canvas = require('canvas');
 const fs = require('fs');
 const axios = require('axios');
 const { get_rotations } = require('./get.js');
-const { get_test_webhooks_url, get_webhooks_url } = require('./get.js');
+const { get_test_webhooks_data } = require('./get.js');
+const { deleteWebhooks } = require('./manage_webhooks');
 
 
 
@@ -102,9 +103,26 @@ const LINKS_UNDEFINED = {
 // ------------------------------------------------------------------------------------------------------------
 
 async function send_to_servers(file) {
-    let urls = await get_webhooks_url();
-    let urls_list = urls[file.type];
-    await Promise.all(urls_list.map(url => send_message(file.img, url)));
+    //Récupérations des données des webhooks
+    let data = await get_test_webhooks_data();
+
+    let urls_list = [];
+
+    //Parcours des données pour récupérer les urls
+    for (server in data) {
+        for (salon in data[server]) {
+            if (data[server][salon].type == file.type) {
+                urls_list.push(data[server][salon].webhook);
+            }
+        }
+    }
+
+    //Envoie des messages simultanément
+    console.log(CC.FgYellow, "Envoie des images " + file.type + " à " + urls_list.length + " serveurs");
+    await Promise.all(urls_list.map(url => send_message(file.img, url)))
+        .then(() => {
+        console.log(CC.FgGreen, "Images envoyées");
+    });
 }
 
 async function send_message(file, url) {
@@ -116,15 +134,11 @@ async function send_message(file, url) {
             avatarURL: 'https://cdn.wikimg.net/en/splatoonwiki/images/3/3d/S3_Icon_Judd.png',
             files: [file]
         })
-            .then(() => {
-                console.log(CC.FgGreen, 'Message sent at : ' + new Date());
-            });
     }
     catch (error) {
         console.error(CC.FgRed, 'Error while sending message : ', error.code);
-        if (error.code == 10015) {
-            console.log(CC.FgRed, 'Error : Invalid permissions');
-        }
+        console.error(CC.FgRed, 'Suppression du webhook : ', url);
+        await deleteWebhooks({url: url});
     }
 }
 
@@ -819,15 +833,15 @@ async function auto_update() {
 
     //Verification de l'heure pour savoir si on doit mettre a jour les rotations
 
-    if (await is_fetchable()) {
+    if (/*await is_fetchable()*/ false) {
         console.log(CC.Reset, "Update des données");
         //Récupération des données
         await fetchSchedules();
         await fetchVF();
     }
 
-    if (await is_sendable()) {
-        console.log(CC.Reset, "Update des rotations");
+    if (/*await is_sendable()*/ true) {
+        console.log(CC.Reset, "Update des rotations...");
 
         const date = new Date();
         const data = await get_rotations();
@@ -847,8 +861,6 @@ async function auto_update() {
         var data_img = await json_to_js(LOCAL_URL + 'data_img.json');
         data_img = []
         js_to_json(LOCAL_URL + 'img_rotations/data_img.json', data_img);
-
-        console.log(CC.Reset, "Suppression effectuée");
 
 
         console.log(CC.Reset, "Création des images");
@@ -934,6 +946,7 @@ async function auto_update() {
 
 
         //Changement les type pour correspondre au type d'envoie
+        console.log(CC.Reset, "Changement des types pour l'envoie");
         for (let i = 0; i < rotations_imgs.length; i++) {
             rotations_imgs[i].type = TYPE_ENVOIE[rotations_imgs[i].type];
         }
@@ -944,6 +957,8 @@ async function auto_update() {
         for (let i = 0; i < rotations_imgs.length; i++) {
             await send_to_servers(rotations_imgs[i]);
         }
+
+        console.log(CC.FgGreen, "Update terminé !");
     }
 }
 
@@ -1008,8 +1023,8 @@ function startInterval() {
     }, 5 * 1000); // 5 seconde = 5 secondes * 1000 ms
 }
 
-startInterval();
-//auto_update();
+//startInterval();
+auto_update();
 
 module.exports = {
     startInterval,

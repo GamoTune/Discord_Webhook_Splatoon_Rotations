@@ -1,43 +1,87 @@
-const { get_webhooks_url } = require('./get');
-const { js_to_json } = require('../convert_json');
+const { get_webhooks_url, save_test_webhooks_data } = require('./get');
+const { get_test_webhooks_data } = require('./get');
 
-async function find_webhooks(url) {
-    const webhook = await get_test_webhooks_url();
-    
-    //Pour chaque type de webhook
-    for (let type in webhook) {
-        //Pour chaque webhook
-        for (let i = 0; i < webhook[type].length; i++) {
-            if (webhook[type][i] === url) {
-                return { type: type, index: i };
-            }
-        }
-    }
-    return null;
-}
 
 async function addWebhooks(data) {
-    const webhooks = await get_webhooks_url();
-    if (data.normal === '' || data.event === '' || data.coop === '') {
-        return {data: 'Webhook(s) can\'t be empty', code: 400};
+    /*
+    data = {
+        server_id: "123456789",
+        channel_id: "123456789",
+        type: "test",
+        url: "https://discord.com/api/webhooks/123456789/123456789",
     }
-    if (webhooks.normal.includes(data.normal) || webhooks.event.includes(data.event) || webhooks.coop.includes(data.coop)) {
-        return {data: 'Webhook(s) already exists', code: 400};
+    */
+    let server_id = data.server_id;
+    let channel_id = data.channel_id;
+    let type = data.type;
+    let url = data.url;
+
+    let webhook_data = await get_test_webhooks_data();
+
+    if (!webhook_data[server_id]){
+        webhook_data[server_id] = {};
     }
-    webhooks.normal.push(data.normal);
-    webhooks.event.push(data.event);
-    webhooks.coop.push(data.coop);
-    js_to_json('splatoon/webhooks.json', webhooks);
-    return {data: 'Webhook(s) created', code: 201};;
+    if (!webhook_data[server_id][channel_id]){
+        webhook_data[server_id][channel_id] = {};
+    }
+
+    webhook_data[server_id][channel_id] = {
+        type: type,
+        webhook: url
+    }
+
+    await save_test_webhooks_data(webhook_data);
+    return {message: 'Data(s) saved', code: 200};
 }
 
+async function deleteWebhooks(data) {
+    /*
+    data = {
+        server_id: "123456789",
+        channel_id: "123456789",
+        url: "https://discord.com/api/webhooks/123456789/123456789",
+    }
+    */
+    let webhook_data = await get_test_webhooks_data();
+    
+    let server_id = data.server_id;
+    let channel_id = data.channel_id;
+    let url = data.url;
+
+    if (!server_id || !channel_id){
+        for (server in webhook_data){
+            for (channel in webhook_data[server]){
+                if (webhook_data[server][channel].webhook == url){
+                    server_id = server;
+                    channel_id = channel;
+                }
+            }
+        }
+        return {message: 'Data not found', code: 404};
+    }
 
 
+    if (!webhook_data[server_id]){
+        return {message: 'Server not found', code: 404};
+    }
+    if (!webhook_data[server_id][channel_id]){
+        return {message: 'Channel not found', code: 404};
+    }
+
+    delete webhook_data[server_id][channel_id];
+
+    if (Object.keys(webhook_data[server_id]).length == 0){
+        delete webhook_data[server_id];
+    }
+
+    await save_test_webhooks_data(webhook_data);
+    return {message: 'Data(s) deleted', code: 200};
+}
 
 
 
 module.exports = {
     addWebhooks,
-    find_webhooks
+    deleteWebhooks
 
 }

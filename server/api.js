@@ -1,11 +1,9 @@
 const express = require('express');
-const { json_to_js, js_to_json } = require('../convert_json');
-const { addWebhooks } = require('../splatoon/manage_webhooks');
+const { addWebhooks, deleteWebhooks } = require('../splatoon/manage_webhooks');
 
 const app = express();
 app.use(express.json());
-const port = 50000;
-
+const port = 50100;
 
 
 app.post('/api/splatoon/add-webhooks', (req, res) => {
@@ -18,8 +16,8 @@ app.post('/api/splatoon/add-webhooks', (req, res) => {
     }
     */
     data = req.body;
-   if (data.pass !== '12367/EAZv6k&2') {
-        res.json({error: 'Wrong password', code: 401});
+    if (data.pass !== '12367/EAZv6k&2') {
+        res.json({message: 'Wrong password', code: 401});
        return;
     }
     addWebhooks(data)
@@ -29,10 +27,26 @@ app.post('/api/splatoon/add-webhooks', (req, res) => {
         });
 });
 
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+app.post('/api/splatoon/delete-webhooks', (req, res) => {
+    /*
+    data = {
+        "pass": "password,
+        "server_id": "000000000",
+        "channel_id": "000000001",
+    */
+    data = req.body;
+    if (data.pass !== '12367/EAZv6k&2') {
+        res.json({message: 'Wrong password', code: 401});
+        return;
+    }
+    deleteWebhooks(data)
+        .then(response => {
+            console.log(response);
+            res.send(response);
+        });
 });
 
 
-
-
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
