@@ -15,15 +15,3 @@ axios.post('http://localhost:50100/api/splatoon/add-webhooks', {
     .catch(function (error) {
         console.log(error);
     });
-
-axios.post('http://localhost:50100/api/splatoon/delete-webhooks', {
-    pass: '12367/EAZv6k&2',
-    server_id: "000000000",
-    channel_id: "000000001",
-})
-    .then(function (response) {
-        console.log(response.data);
-    })
-    .catch(function (error) {
-        console.log(error);
-    });

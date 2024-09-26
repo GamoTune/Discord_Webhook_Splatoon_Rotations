@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $jsonData = json_encode($data);
 
     // URL du serveur cible
-    $url = 'https://86.205.85.28:50000/api/splatoon/add-webhooks'; // Remplacez par l'URL de votre serveur
+    $url = 'https://86.205.85.28:50000/splatoon/api/add-webhooks'; // Remplacez par l'URL de votre serveur
 
     // Initialisation de la requête cURL
     $ch = curl_init($url);

@@ -13,7 +13,8 @@ module.exports = {
     get_paths_images,
     get_path_by_name,
     get_now_image_by_name,
-    get_webhooks_url,
+    get_webhooks_data,
+    save_webhooks_data,
     get_test_webhooks_data,
     save_test_webhooks_data,
 }
@@ -121,16 +122,20 @@ async function get_now_image_by_name(name){
 
 // GET des webhooks ---------------------------------------------------------------------------------------------------
 
-async function get_webhooks_url() {
-    let urls = await json_to_js(LOCAL_URL + 'webhooks.json');
+async function get_webhooks_data() {
+    let urls = await json_to_js(LOCAL_URL + "webhooks.json");
     return urls;
 }
 
 async function get_test_webhooks_data() {
-    let data = await json_to_js("test_stockage.json");
+    let data = await json_to_js(LOCAL_URL + "webhook_test.json");
     return data;
 }
 
+async function save_webhooks_data(data) {
+    js_to_json(LOCAL_URL + "webhooks.json", data);
+}
+
 async function save_test_webhooks_data(data) {
-    js_to_json("test_stockage.json", data);
+    js_to_json(LOCAL_URL + "webhooks.json", data);
 }

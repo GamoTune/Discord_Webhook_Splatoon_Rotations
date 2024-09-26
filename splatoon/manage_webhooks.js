@@ -1,5 +1,4 @@
-const { get_webhooks_url, save_test_webhooks_data } = require('./get');
-const { get_test_webhooks_data } = require('./get');
+const { get_webhooks_data, save_webhooks_data } = require('./get');
 
 
 async function addWebhooks(data) {
@@ -16,7 +15,7 @@ async function addWebhooks(data) {
     let type = data.type;
     let url = data.url;
 
-    let webhook_data = await get_test_webhooks_data();
+    let webhook_data = await get_webhooks_data();
 
     if (!webhook_data[server_id]){
         webhook_data[server_id] = {};
@@ -30,7 +29,7 @@ async function addWebhooks(data) {
         webhook: url
     }
 
-    await save_test_webhooks_data(webhook_data);
+    await save_webhooks_data(webhook_data);
     return {message: 'Data(s) saved', code: 200};
 }
 
@@ -42,7 +41,7 @@ async function deleteWebhooks(data) {
         url: "https://discord.com/api/webhooks/123456789/123456789",
     }
     */
-    let webhook_data = await get_test_webhooks_data();
+    let webhook_data = await get_webhooks_data();
     
     let server_id = data.server_id;
     let channel_id = data.channel_id;
@@ -55,9 +54,11 @@ async function deleteWebhooks(data) {
                     server_id = server;
                     channel_id = channel;
                 }
+                else {
+                    return {message: 'Webhook not found', code: 404};
+                }
             }
         }
-        return {message: 'Data not found', code: 404};
     }
 
 
@@ -74,7 +75,7 @@ async function deleteWebhooks(data) {
         delete webhook_data[server_id];
     }
 
-    await save_test_webhooks_data(webhook_data);
+    await save_webhooks_data(webhook_data);
     return {message: 'Data(s) deleted', code: 200};
 }
 

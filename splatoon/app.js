@@ -3,8 +3,7 @@ const { json_to_js, js_to_json } = require('../convert_json.js');
 const Canvas = require('canvas');
 const fs = require('fs');
 const axios = require('axios');
-const { get_rotations } = require('./get.js');
-const { get_test_webhooks_data } = require('./get.js');
+const { get_rotations, get_webhooks_data } = require('./get.js');
 const { deleteWebhooks } = require('./manage_webhooks');
 
 
@@ -104,25 +103,21 @@ const LINKS_UNDEFINED = {
 
 async function send_to_servers(file) {
     //Récupérations des données des webhooks
-    let data = await get_test_webhooks_data();
+    let data = await get_webhooks_data();
 
     let urls_list = [];
 
     //Parcours des données pour récupérer les urls
     for (server in data) {
         for (salon in data[server]) {
-            if (data[server][salon].type == file.type) {
+            if (data[server][salon].type == file.type_envoie) {
                 urls_list.push(data[server][salon].webhook);
             }
         }
     }
 
     //Envoie des messages simultanément
-    console.log(CC.FgYellow, "Envoie des images " + file.type + " à " + urls_list.length + " serveurs");
     await Promise.all(urls_list.map(url => send_message(file.img, url)))
-        .then(() => {
-        console.log(CC.FgGreen, "Images envoyées");
-    });
 }
 
 async function send_message(file, url) {
@@ -137,8 +132,15 @@ async function send_message(file, url) {
     }
     catch (error) {
         console.error(CC.FgRed, 'Error while sending message : ', error.code);
-        console.error(CC.FgRed, 'Suppression du webhook : ', url);
-        await deleteWebhooks({url: url});
+        if (10015 <= error.code <= 10016) {
+            console.error(CC.FgRed, 'Suppression du webhook : ', url);
+            let res = await deleteWebhooks({ url: url });
+            if (res.code == 200) {
+                console.log(CC.FgGreen, 'Webhook supprimé');
+            } else {
+                console.log(CC.FgRed, 'Erreur lors de la suppression du webhook. Error', res.code);
+            }
+        }
     }
 }
 
@@ -565,7 +567,7 @@ async function create_challenge_image(settings, startTime, endTime, noc) {
             type: "event",
             link: link,
         };
-    } catch(error) {
+    } catch (error) {
         console.error(CC.FgRed, 'Erreur lors de la création de l\'image');
         console.log(CC.FgRed, 'Envoie de l\'image undefined');
 
@@ -768,7 +770,7 @@ async function create_coop_image(nodes, index) {
             type: "coopGrouping",
             link: link,
         };
-    } catch(error) {
+    } catch (error) {
         console.error(CC.FgRed, 'Erreur lors de la création de l\'image');
         console.log(CC.FgRed, 'Envoie de l\'image undefined');
 
@@ -824,9 +826,6 @@ async function is_fetchable() {
 
 async function save_image(img, link) {
     fs.writeFileSync(link, img);
-    const data = json_to_js(LOCAL_URL + 'data_img.json');
-    data.push(link);
-    js_to_json(LOCAL_URL + 'data_img.json', data);
 }
 
 async function auto_update() {
@@ -854,14 +853,6 @@ async function auto_update() {
         const currentFest = data.currentFest;
         var isFest = false
         var rotations_imgs = []; //Variable pour stocker les images des rotations
-
-        
-        //Suppression des anciennes images
-        console.log(CC.Reset, "Suppression de la liste des dernières images");
-        var data_img = await json_to_js(LOCAL_URL + 'data_img.json');
-        data_img = []
-        js_to_json(LOCAL_URL + 'img_rotations/data_img.json', data_img);
-
 
         console.log(CC.Reset, "Création des images");
 
@@ -948,13 +939,14 @@ async function auto_update() {
         //Changement les type pour correspondre au type d'envoie
         console.log(CC.Reset, "Changement des types pour l'envoie");
         for (let i = 0; i < rotations_imgs.length; i++) {
-            rotations_imgs[i].type = TYPE_ENVOIE[rotations_imgs[i].type];
+            rotations_imgs[i].type_envoie = TYPE_ENVOIE[rotations_imgs[i].type];
         }
 
         //Envoie des images
         console.log(CC.Reset, "Envoie des rotations actuelles : " + date);
         console.log(CC.Reset, "Nombre d'image : " + rotations_imgs.length);
         for (let i = 0; i < rotations_imgs.length; i++) {
+            console.log(CC.FgYellow, "Envoie de l'image " + rotations_imgs[i].type);
             await send_to_servers(rotations_imgs[i]);
         }
 
@@ -1025,8 +1017,3 @@ function startInterval() {
 
 //startInterval();
 auto_update();
-
-module.exports = {
-    startInterval,
-    auto_update,
-}

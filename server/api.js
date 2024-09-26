@@ -3,10 +3,10 @@ const { addWebhooks, deleteWebhooks } = require('../splatoon/manage_webhooks');
 
 const app = express();
 app.use(express.json());
-const port = 50100;
+const port = 50000;
 
 
-app.post('/api/splatoon/add-webhooks', (req, res) => {
+app.post('/splatoon/api/add-webhooks', (req, res) => {
     /*
     data = {
         "pass": "password",
@@ -27,7 +27,7 @@ app.post('/api/splatoon/add-webhooks', (req, res) => {
         });
 });
 
-app.post('/api/splatoon/delete-webhooks', (req, res) => {
+app.post('/splatoon/api/delete-webhooks', (req, res) => {
     /*
     data = {
         "pass": "password,
