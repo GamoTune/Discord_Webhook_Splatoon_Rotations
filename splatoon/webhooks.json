@@ -1,14 +1,30 @@
 {
-    "normal": [
-        "https://discord.com/api/webhooks/1262739968128847944/wMezGpYVcHIJHxjwqYmJ1eq3k27d-WLnHZO_4ZEZZKxXAUvQXMFyeAvOrEG6UAi-39zh",
-        "https://discord.com/api/webhooks/1287424393282060380/EUtiDqF9fko3fabQYGuMm1tK3ZxmW4uSxyNjVf9ASyqdpw2aelRV_WwskOtiwknlE_i2"
-    ],
-    "event": [
-        "https://discord.com/api/webhooks/1266375873645383701/yMnBgjIzYBB7317jlqyGz_mhzIHcXT-579Wbv26A61oD-vh75EJmaeRZLwY9mdjgr2EU",
-        "https://discord.com/api/webhooks/1287424509816733808/x7Z-hjVKDqGXrJcH4Pc13_mgdgjbLltMBNfraFM5OxHRBjZe74Ql-i49ANzngwHbCqt0"
-    ],
-    "coop": [
-        "https://discord.com/api/webhooks/1267098665751810140/xLeRJKSVQCdS7m1tQ26mWMbV3p0X385vqjMivNTeeMe1yLbH2qrPjLqb8CC9JXV0QUT3",
-        "https://discord.com/api/webhooks/1287424572584628285/nhAddRuNdd8SeomNnhRbeJjEyc5xm6hXMHJohygvrjh6uV4qUB7oawsMmFY-jww9vI5r"
-    ]
+    "1246004342654504960": {
+        "1262733875730317393": {
+            "type": "normal",
+            "webhook": "https://discord.com/api/webhooks/1262739968128847944/wMezGpYVcHIJHxjwqYmJ1eq3k27d-WLnHZO_4ZEZZKxXAUvQXMFyeAvOrEG6UAi-39zh"
+        },
+        "1266375847900745788": {
+            "type": "event",
+            "webhook": "https://discord.com/api/webhooks/1266375873645383701/yMnBgjIzYBB7317jlqyGz_mhzIHcXT-579Wbv26A61oD-vh75EJmaeRZLwY9mdjgr2EU"
+        },
+        "1267098644650135717": {
+            "type": "salmon",
+            "webhook": "https://discord.com/api/webhooks/1267098665751810140/xLeRJKSVQCdS7m1tQ26mWMbV3p0X385vqjMivNTeeMe1yLbH2qrPjLqb8CC9JXV0QUT3"
+        }
+    },
+    "1134866421659205675": {
+        "1287424206899904645": {
+            "type": "normal",
+            "webhook": "https://discord.com/api/webhooks/1287424393282060380/EUtiDqF9fko3fabQYGuMm1tK3ZxmW4uSxyNjVf9ASyqdpw2aelRV_WwskOtiwknlE_i2"
+        },
+        "1287424278563655831": {
+            "type": "event",
+            "webhook": "https://discord.com/api/webhooks/1287424509816733808/x7Z-hjVKDqGXrJcH4Pc13_mgdgjbLltMBNfraFM5OxHRBjZe74Ql-i49ANzngwHbCqt0"
+        },
+        "1287424325414027285": {
+            "type": "event",
+            "webhook": "https://discord.com/api/webhooks/1287424572584628285/nhAddRuNdd8SeomNnhRbeJjEyc5xm6hXMHJohygvrjh6uV4qUB7oawsMmFY-jww9vI5r"
+        }
+    }
 }

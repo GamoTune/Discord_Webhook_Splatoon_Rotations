@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { json_to_js } = require('../convert_json');
+const { json_to_js, js_to_json } = require('../convert_json');
 
 module.exports = {
     get_rotations,
@@ -13,8 +13,10 @@ module.exports = {
     get_paths_images,
     get_path_by_name,
     get_now_image_by_name,
-    get_webhooks_url,
-    get_test_webhooks_url,
+    get_webhooks_data,
+    save_webhooks_data,
+    get_test_webhooks_data,
+    save_test_webhooks_data,
 }
 
 const name_undefined = {
@@ -120,12 +122,20 @@ async function get_now_image_by_name(name){
 
 // GET des webhooks ---------------------------------------------------------------------------------------------------
 
-async function get_webhooks_url() {
-    let urls = await json_to_js(LOCAL_URL + 'webhooks.json');
+async function get_webhooks_data() {
+    let urls = await json_to_js(LOCAL_URL + "webhooks.json");
     return urls;
 }
 
-async function get_test_webhooks_url() {
-    let urls = await json_to_js(LOCAL_URL + 'webhooks_test.json');
-    return urls;
+async function get_test_webhooks_data() {
+    let data = await json_to_js(LOCAL_URL + "webhook_test.json");
+    return data;
+}
+
+async function save_webhooks_data(data) {
+    js_to_json(LOCAL_URL + "webhooks.json", data);
+}
+
+async function save_test_webhooks_data(data) {
+    js_to_json(LOCAL_URL + "webhooks.json", data);
 }
