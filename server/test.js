@@ -1,12 +1,11 @@
 const axios = require('axios');
 
 
-axios.post('http://localhost:50100/api/splatoon/add-webhooks', {
+
+
+axios.post('http://localhost:50000/splatoon/api/delete-webhooks', {
     pass: '12367/EAZv6k&2',
-    server_id: "000000000",
-    channel_id: "000000001",
-    type: "test4",
-    url: "https://kaozknnfnzef.com/789/123456789",
+    url: "https://discord.com/api/webhooks/1289153109301530705/FgTEpIY-VySMKJwisRtN5lj_MpHoHKfaCjjpdkiMrfDgwq-LIBiZw1SYsT08AHZIU0F6",
 
 })
     .then(function (response) {

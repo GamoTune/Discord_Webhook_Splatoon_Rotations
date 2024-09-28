@@ -41,6 +41,7 @@ async function deleteWebhooks(data) {
         url: "https://discord.com/api/webhooks/123456789/123456789",
     }
     */
+
     let webhook_data = await get_webhooks_data();
     
     let server_id = data.server_id;
@@ -53,9 +54,6 @@ async function deleteWebhooks(data) {
                 if (webhook_data[server][channel].webhook == url){
                     server_id = server;
                     channel_id = channel;
-                }
-                else {
-                    return {message: 'Webhook not found', code: 404};
                 }
             }
         }
