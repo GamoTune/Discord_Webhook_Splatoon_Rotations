@@ -26,5 +26,15 @@
             "type": "event",
             "webhook": "https://discord.com/api/webhooks/1287424572584628285/nhAddRuNdd8SeomNnhRbeJjEyc5xm6hXMHJohygvrjh6uV4qUB7oawsMmFY-jww9vI5r"
         }
+    },
+    "1023176550419546172": {
+        "1289153104465629266": {
+            "type": "salmon",
+            "webhook": "https://discord.com/api/webhooks/1289153110740041748/ODV4icgjozWVk1EHzgZE0JZfoVL2Gf-YwCP3PVPWMjMZyJsp2uRJsg4sD0eJF-wDmJl8"
+        },
+        "1289153105509879891": {
+            "type": "event",
+            "webhook": "https://discord.com/api/webhooks/1289153111859925074/8KoxAYdGxhx6EZAMfkY5Z3r7eqLn7em50uPgt3fmEf7yY7JeZmjqKxLSU_kDxL_iSE5-"
+        }
     }
 }
