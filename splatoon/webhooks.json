@@ -19,7 +19,7 @@
             "webhook": "https://discord.com/api/webhooks/1287424393282060380/EUtiDqF9fko3fabQYGuMm1tK3ZxmW4uSxyNjVf9ASyqdpw2aelRV_WwskOtiwknlE_i2"
         },
         "1287424278563655831": {
-            "type": "event",
+            "type": "salmon",
             "webhook": "https://discord.com/api/webhooks/1287424509816733808/x7Z-hjVKDqGXrJcH4Pc13_mgdgjbLltMBNfraFM5OxHRBjZe74Ql-i49ANzngwHbCqt0"
         },
         "1287424325414027285": {
