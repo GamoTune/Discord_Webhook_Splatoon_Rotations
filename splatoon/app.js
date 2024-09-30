@@ -86,7 +86,7 @@ const TYPE_ENVOIE = {
     festOuvert: "normal",
     tricolor: "normal",
     event: "event",
-    coopGrouping: "coop",
+    coopGrouping: "salmon",
 }
 
 const LINKS_UNDEFINED = {
