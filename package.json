@@ -3,7 +3,9 @@
     "axios": "^1.7.3",
     "canvas": "^3.0.0-rc2",
     "discord.js": "^14.15.3",
-    "express": "^4.19.2"
+    "express": "^4.21.0",
+    "luxon": "^3.5.0",
+    "mysql": "^2.18.1"
   },
   "name": "discord_webhook_splatoon_rotations",
   "version": "1.0.0",

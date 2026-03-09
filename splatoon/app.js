@@ -2,48 +2,18 @@ const { WebhookClient } = require('discord.js');
 const { json_to_js, js_to_json } = require('../convert_json.js');
 const Canvas = require('canvas');
 const fs = require('fs');
-const axios = require('axios');
-const { get_rotations, get_webhooks_data } = require('./get.js');
-const { deleteWebhooks } = require('./manage_webhooks');
+const { get_rotations } = require('./get.js');
+const { get_normal_webhooks, get_salmon_webhooks, get_event_webhooks, get_webhooks_by_params } = require('../manage_db/get.js');
+const { delete_webhooks } = require('../manage_db/delete.js');
+const { CC } = require('../console_color');
+const { fetchSchedules, fetchVF } = require('./fetch_splatoon3ink.js');
 
 
 
 // Constantes ------------------------------------------------------------------------------------------------------------
 
-
 const LOCAL_URL = "splatoon/";
-const USER_AGENT = "GamoTune's Discord Bot (my discord tag : 'gamotune' or my dev discord server : 'https://discord.gg/m9scwRtAzX')";
 
-
-const CC = {
-    Reset: "\x1b[0m",
-    Bright: "\x1b[1m",
-    Dim: "\x1b[2m",
-    Underscore: "\x1b[4m",
-    Blink: "\x1b[5m",
-    Reverse: "\x1b[7m",
-    Hidden: "\x1b[8m",
-
-    FgBlack: "\x1b[30m",
-    FgRed: "\x1b[31m",
-    FgGreen: "\x1b[32m",
-    FgYellow: "\x1b[33m",
-    FgBlue: "\x1b[34m",
-    FgMagenta: "\x1b[35m",
-    FgCyan: "\x1b[36m",
-    FgWhite: "\x1b[37m",
-    FgGray: "\x1b[90m",
-
-    BgBlack: "\x1b[40m",
-    BgRed: "\x1b[41m",
-    BgGreen: "\x1b[42m",
-    BgYellow: "\x1b[43m",
-    BgBlue: "\x1b[44m",
-    BgMagenta: "\x1b[45m",
-    BgCyan: "\x1b[46m",
-    BgWhite: "\x1b[47m",
-    BgGray: "\x1b[100m",
-}
 
 const COLORS = {
     regular: '#19d719',
@@ -51,7 +21,7 @@ const COLORS = {
     x: '#0fdb9b',
     fest: '#717178',
     event: '#f02d7e',
-    coopGrouping: '#FF5600',
+    salmon: '#FF5600',
 }
 
 const ORDER = {
@@ -61,7 +31,7 @@ const ORDER = {
     bankaraOuvert: 2,
     x: 3,
     event: 4,
-    coopGrouping: 5,
+    salmon: 5,
     festOuvert: 6,
     festSérie: 7,
     tricolor: 8,
@@ -73,7 +43,7 @@ const TYPE_FR_NAME = {
     x: "Match X",
     event: "Match Challenge",
     fest: "Festimatch",
-    coopGrouping: "Salmon Run"
+    salmon: "Salmon Run"
 }
 
 const TYPE_ENVOIE = {
@@ -86,7 +56,7 @@ const TYPE_ENVOIE = {
     festOuvert: "normal",
     tricolor: "normal",
     event: "event",
-    coopGrouping: "coop",
+    salmon: "salmon",
 }
 
 const LINKS_UNDEFINED = {
@@ -96,28 +66,33 @@ const LINKS_UNDEFINED = {
     fest: LOCAL_URL + "img_rotations/undefined/normal_undefined.png",
     tricolor: LOCAL_URL + "img_rotations/undefined/normal_undefined.png",
     event: LOCAL_URL + "img_rotations/undefined/challenge_undefined.png",
-    coopGrouping: LOCAL_URL + "img_rotations/undefined/salmon_undefined.png",
+    salmon: LOCAL_URL + "img_rotations/undefined/salmon_undefined.png",
 }
+
+const WEBHOOK_FUNCTIONS = {
+    normal: get_normal_webhooks,
+    salmon: get_salmon_webhooks,
+    event: get_event_webhooks,
+}
+
+
 
 // ------------------------------------------------------------------------------------------------------------
 
 async function send_to_servers(file) {
     //Récupérations des données des webhooks
-    let data = await get_webhooks_data();
 
-    let urls_list = [];
+    const get_webhooks_function = await WEBHOOK_FUNCTIONS[file.type_envoie]; //Récupération des webhooks en fonction du type d'envoie
+    const webhooks = await get_webhooks_function(); //Récupération des webhooks
 
-    //Parcours des données pour récupérer les urls
-    for (server in data) {
-        for (salon in data[server]) {
-            if (data[server][salon].type == file.type_envoie) {
-                urls_list.push(data[server][salon].webhook);
-            }
-        }
-    }
+    console.log(CC.FgYellow, "Envoie de l'image : " + file.type);
+    console.log(CC.FgYellow, "Nombre de salons : " + webhooks.length);
 
     //Envoie des messages simultanément
-    await Promise.all(urls_list.map(url => send_message(file.img, url)))
+    await Promise.all(webhooks.map(url => send_message(file.img, url))) //Envoie des messages
+        .then(() => {
+            console.log(CC.FgGreen, "Envoie terminé");
+        });
 }
 
 async function send_message(file, url) {
@@ -129,12 +104,14 @@ async function send_message(file, url) {
             avatarURL: 'https://cdn.wikimg.net/en/splatoonwiki/images/3/3d/S3_Icon_Judd.png',
             files: [file]
         })
-    }
-    catch (error) {
+    } catch (error) {
         console.error(CC.FgRed, 'Error while sending message : ', error.code);
+
         if (10015 <= error.code <= 10016) {
             console.error(CC.FgRed, 'Suppression du webhook : ', url);
-            let res = await deleteWebhooks({ url: url });
+
+            let id_webhook = get_webhooks_by_params({ url: url });
+            let res = await delete_webhooks({ id: id_webhook });
             if (res.code == 200) {
                 console.log(CC.FgGreen, 'Webhook supprimé');
             } else {
@@ -153,21 +130,7 @@ function add_two_hours(isoString) {
     return date;
 }
 
-function set_hours_pair(isoString) {
-    // Convertir la date ISO en objet Date
-    const date = new Date(isoString);
-
-    // Mettre les heures à pair
-    if (date.getHours() % 2 == 1) {
-        date.setHours(date.getHours() + 1);
-    }
-
-    date.setMinutes(0, 0, 0);
-
-    return date;
-}
-
-function isDateBetween(dateToCheck, startDate, endDate) {
+function is_date_between(dateToCheck, startDate, endDate) {
     const date = dateToCheck;
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -177,44 +140,6 @@ function isDateBetween(dateToCheck, startDate, endDate) {
 }
 
 
-// Fonction pour récupérer les données -----------------------------------------------------------------------------------------------
-
-
-async function fetchSchedules() {
-    let url = 'https://splatoon3.ink/data/schedules.json';
-    console.log(CC.FgYellow, "Récupération des données des rotations...");
-    try {
-        const response = await axios.get(url, {
-            headers: {
-                'User-Agent': USER_AGENT
-            }
-        });
-        // Afficher les données récupérées
-        console.log(CC.FgGreen, "Données des rotations récupérées");
-        fs.writeFileSync(LOCAL_URL + 'rotations_data.json', JSON.stringify(response.data));
-        console.log(CC.FgGreen, "Données sauvegardées");
-    } catch (error) {
-        console.error(CC.FgRed, 'Erreur lors de la récupération des données:', error);
-    }
-}
-
-async function fetchVF() {
-    let url = 'https://splatoon3.ink/data/locale/fr-FR.json';
-    console.log(CC.FgYellow, "Récupération des données des infos en Français...");
-    try {
-        const response = await axios.get(url, {
-            headers: {
-                'User-Agent': USER_AGENT
-            }
-        });
-        // Afficher les données récupérées
-        console.log(CC.FgGreen, "Données des infos en Français récupérées");
-        fs.writeFileSync(LOCAL_URL + 'splatoon_data.json', JSON.stringify(response.data));
-        console.log(CC.FgGreen, "Données sauvegardées");
-    } catch (error) {
-        console.error(CC.FgRed, 'Erreur lors de la récupération des données:', error);
-    }
-}
 
 // Fonction pour créer les images -----------------------------------------------------------------------------------------------
 
@@ -336,7 +261,7 @@ async function create_classic_image(type, settings, startTime, endTime) {
         //Envoie de l'image undefined
         return {
             img: LINKS_UNDEFINED[type],
-            type: type,
+            type: type + anarchie_type,
             link: LINKS_UNDEFINED[type],
         };
 
@@ -437,9 +362,9 @@ async function create_tricolor_image(type, settings, stage, startTime, endTime) 
 
         //Envoie de l'image undefined
         return {
-            img: LINKS_UNDEFINED[type],
-            type: type,
-            link: LINKS_UNDEFINED[type],
+            img: LINKS_UNDEFINED["tricolor"],
+            type: "tricolor",
+            link: LINKS_UNDEFINED["tricolor"],
         };
     }
 }
@@ -573,9 +498,9 @@ async function create_challenge_image(settings, startTime, endTime, noc) {
 
         //Envoie de l'image undefined
         return {
-            img: LINKS_UNDEFINED[type],
-            type: type,
-            link: LINKS_UNDEFINED[type],
+            img: LINKS_UNDEFINED["event"],
+            type: "event",
+            link: LINKS_UNDEFINED["event"],
         };
     }
 }
@@ -660,7 +585,7 @@ async function create_coop_image(nodes, index) {
 
 
         //La couleur de fond
-        context.fillStyle = COLORS["coopGrouping"];
+        context.fillStyle = COLORS["salmon"];
         context.fillRect(0, 0, X_MAX, Y_MAX);
 
         context.font = '30px splatoon2';
@@ -755,19 +680,19 @@ async function create_coop_image(nodes, index) {
         context.fillText(text_start3 + ' - ' + text_end3, 430 + 409 / 2, 609 + 52 / 2);
 
 
-        console.log(CC.FgGreen, "Image créée : coopGrouping");
+        console.log(CC.FgGreen, "Image créée : salmon");
 
         //Enregistrement de l'image
 
         const img = canvas.toBuffer('image/png');
-        const link = `${LOCAL_URL}img_rotations/coopGrouping.png`;
+        const link = `${LOCAL_URL}img_rotations/salmon.png`;
         save_image(img, link);
 
         //Renvoie de l'image avec infos
 
         return {
             img: img,
-            type: "coopGrouping",
+            type: "salmon",
             link: link,
         };
     } catch (error) {
@@ -776,9 +701,9 @@ async function create_coop_image(nodes, index) {
 
         //Envoie de l'image undefined
         return {
-            img: LINKS_UNDEFINED[type],
-            type: type,
-            link: LINKS_UNDEFINED[type],
+            img: LINKS_UNDEFINED["salmon"],
+            type: "salmon",
+            link: LINKS_UNDEFINED["salmon"],
         };
     }
 }
@@ -788,7 +713,7 @@ async function create_coop_image(nodes, index) {
 // Fonction pour d'auto-update -------------------------------------------------------------------------------------------------
 
 
-async function is_sendable() {
+async function is_sendable(rotations) {
     //Récupération de l'heure actuelle
     let date = new Date();
 
@@ -798,15 +723,23 @@ async function is_sendable() {
     //Comparaison des date
     let next_date = new Date(logs.next_update);
     if (date >= next_date) {
-        logs.next_update = add_two_hours(date.toISOString()).toISOString();
-        logs.next_update = set_hours_pair(logs.next_update).toISOString();
-        js_to_json(LOCAL_URL + 'logs.json', logs);
+        //Mise à jour de la date de fetch
+        for (let i = 0; i < rotations.length; i++) { //Pour chaque rotation de match classique
+            let rota = rotations[i];
+            if (is_date_between(date, rota.startTime, rota.endTime)) { //Trie de la rotation actuelle
+                console.log(CC.FgMagenta, "Update des rotations : " + rota.startTime);
+                logs.next_update = rota.endTime;
+                js_to_json(LOCAL_URL + 'logs.json', logs);
+                console.log(CC.FgBlue, "Prochaine update : " + rota.endTime);
+                return true;
+            }
+        }
         return true;
     }
     return false;
 }
 
-async function is_fetchable() {
+async function is_fetchable(rotations) {
     //Récupération de l'heure actuelle
     let date = new Date();
 
@@ -814,11 +747,18 @@ async function is_fetchable() {
     let logs = await json_to_js(LOCAL_URL + 'logs.json');
 
     let next_date = new Date(logs.next_fetch);
+
     //Comparaison des date
     if (date >= next_date) {
-        logs.next_fetch = add_two_hours(date.toISOString()).toISOString();
-        logs.next_fetch = set_hours_pair(logs.next_fetch).toISOString();
-        js_to_json(LOCAL_URL + 'logs.json', logs);
+        //Mise à jour de la date de fetch
+        for (let i = 0; i < rotations.length; i++) { //Pour chaque rotation de match classique
+            let rota = rotations[i];
+            if (is_date_between(date, rota.startTime, rota.endTime)) { //Trie de la rotation actuelle
+                logs.next_fetch = rota.endTime;
+                js_to_json(LOCAL_URL + 'logs.json', logs);
+                return true;
+            }
+        }
         return true;
     }
     return false;
@@ -830,20 +770,22 @@ async function save_image(img, link) {
 
 async function auto_update() {
 
+    const data = await get_rotations();
     //Verification de l'heure pour savoir si on doit mettre a jour les rotations
 
-    if (await is_fetchable()) {
+    if (/*await is_fetchable(data.regularSchedules.nodes)*/ false) {
         console.log(CC.Reset, "Update des données");
         //Récupération des données
         await fetchSchedules();
         await fetchVF();
     }
 
-    if (await is_sendable()) {
+    if (await is_sendable(data.regularSchedules.nodes)) {
         console.log(CC.Reset, "Update des rotations...");
 
         const date = new Date();
-        const data = await get_rotations();
+
+        //Récupération des rotations
         const regularSchedules = data.regularSchedules.nodes;
         const bankaraSchedules = data.bankaraSchedules.nodes;
         const xSchedules = data.xSchedules.nodes;
@@ -857,6 +799,7 @@ async function auto_update() {
         console.log(CC.Reset, "Création des images");
 
         //Rotation Salmon Run
+        //Modification de la date pour correspondre à la rotation (interval de 2h)
         const rota_salmon = coopGroupingSchedule.regularSchedules.nodes.concat(coopGroupingSchedule.bigRunSchedules.nodes);
         rota_salmon.sort((a, b) => {
             return new Date(a.startTime) - new Date(b.startTime);
@@ -866,7 +809,7 @@ async function auto_update() {
         for (let i = 0; i < rota_salmon.length; i++) { //Pour chaque rotation de Salmon Run
             let starTime = new Date(rota_salmon[i].startTime);
             let endTime = add_two_hours(starTime.toISOString());
-            if (isDateBetween(date, starTime, endTime)) { //Trie de la rotation actuelle
+            if (is_date_between(date, starTime, endTime)) { //Trie de la rotation actuelle
                 rotations_imgs.push(await create_coop_image(rota_salmon, i));
             }
         }
@@ -875,7 +818,7 @@ async function auto_update() {
         for (let i = 0; i < festSchedules.length; i++) { //Pour chaque rotation de fest
             let rota = festSchedules[i];
             var settings;
-            if (isDateBetween(date, rota.startTime, rota.endTime)) { //Trie de la rotation actuelle
+            if (is_date_between(date, rota.startTime, rota.endTime)) { //Trie de la rotation actuelle
                 if (rota.festMatchSettings != null) {
                     isFest = true;
                     for (let j = 0; j < rota.festMatchSettings.length; j++) { //Pour chaque match de la rotation
@@ -894,7 +837,7 @@ async function auto_update() {
             //Rotations de match Classique
             for (let i = 0; i < regularSchedules.length; i++) { //Pour chaque rotation de match classique
                 let rota = regularSchedules[i];
-                if (isDateBetween(date, rota.startTime, rota.endTime)) { //Trie de la rotation actuelle
+                if (is_date_between(date, rota.startTime, rota.endTime)) { //Trie de la rotation actuelle
                     rotations_imgs.push(await create_classic_image("regular", rota.regularMatchSetting, rota.startTime, rota.endTime));
                 }
             }
@@ -902,7 +845,7 @@ async function auto_update() {
             //Rotations de match Anarchie
             for (let i = 0; i < bankaraSchedules.length; i++) { //Pour chaque rotation de match anarchie
                 let rota = bankaraSchedules[i];
-                if (isDateBetween(date, rota.startTime, rota.endTime)) { //Trie de la rotation actuelle
+                if (is_date_between(date, rota.startTime, rota.endTime)) { //Trie de la rotation actuelle
                     for (let j = 0; j < rota.bankaraMatchSettings.length; j++) { //Pour chaque match de la rotation
                         let settings = rota.bankaraMatchSettings[j];
                         rotations_imgs.push(await create_classic_image("bankara", settings, rota.startTime, rota.endTime));
@@ -913,7 +856,7 @@ async function auto_update() {
             //Rotation de match X
             for (let i = 0; i < xSchedules.length; i++) { //Pour chaque rotation de match X
                 let rota = xSchedules[i];
-                if (isDateBetween(date, rota.startTime, rota.endTime)) { //Trie de la rotation actuelle
+                if (is_date_between(date, rota.startTime, rota.endTime)) { //Trie de la rotation actuelle
                     rotations_imgs.push(await create_classic_image("x", rota.xMatchSetting, rota.startTime, rota.endTime));
                 }
             }
@@ -922,7 +865,7 @@ async function auto_update() {
             for (let i = 0; i < eventSchedules.length; i++) { //Pour chaque rotation de match challenge
                 let rota = eventSchedules[i];
                 for (let j = 0; j < rota.timePeriods.length; j++) { //Pour chaque période de la rotation
-                    if (isDateBetween(date, rota.timePeriods[j].startTime, rota.timePeriods[j].endTime)) { //Trie de la rotation actuelle
+                    if (is_date_between(date, rota.timePeriods[j].startTime, rota.timePeriods[j].endTime)) { //Trie de la rotation actuelle
                         rotations_imgs.push(await create_challenge_image(rota, rota.timePeriods[j].startTime, rota.timePeriods[j].endTime, i));
                     }
                 }
@@ -937,7 +880,6 @@ async function auto_update() {
 
 
         //Changement les type pour correspondre au type d'envoie
-        console.log(CC.Reset, "Changement des types pour l'envoie");
         for (let i = 0; i < rotations_imgs.length; i++) {
             rotations_imgs[i].type_envoie = TYPE_ENVOIE[rotations_imgs[i].type];
         }
@@ -946,11 +888,11 @@ async function auto_update() {
         console.log(CC.Reset, "Envoie des rotations actuelles : " + date);
         console.log(CC.Reset, "Nombre d'image : " + rotations_imgs.length);
         for (let i = 0; i < rotations_imgs.length; i++) {
-            console.log(CC.FgYellow, "Envoie de l'image " + rotations_imgs[i].type);
             await send_to_servers(rotations_imgs[i]);
         }
 
         console.log(CC.FgGreen, "Update terminé !");
+        console.log(CC.Reset, "----------------------------------------");
     }
 }
 
